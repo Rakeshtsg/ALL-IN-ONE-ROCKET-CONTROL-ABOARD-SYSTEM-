@@ -1,0 +1,56 @@
+#include <SoftwareSerial.h>
+#include <TinyGPS++.h>
+
+// Set up the 433MHz FM RF transmitter module pins
+const int rfTxPin = 9;
+
+// Set up a software serial port for communication with the GPS module
+SoftwareSerial gpsSerial = SoftwareSerial(2, 3);
+
+// Set up a TinyGPS++ object to parse GPS data
+TinyGPSPlus gps;
+
+// Set up a variable to store the altitude of the rocket
+float altitude = 0;
+
+void setup() {
+  // Set the baud rate for the GPS module
+  gpsSerial.begin(9600);
+
+  // Set up the serial port for debugging
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Read GPS data from the GPS module
+  while (gpsSerial.available()) {
+    gps.encode(gpsSerial.read());
+  }
+
+  // Read the altitude from the rocket's altimeter
+  altitude = readAltimeter();
+
+  // Check if a valid GPS fix is available
+  if (gps.location.isValid()) {
+    // Print the latitude, longitude, and altitude to the serial port for debugging
+    Serial.print("Latitude: ");
+    Serial.print(gps.location.lat(), 6);
+    Serial.print(" Longitude: ");
+    Serial.print(gps.location.lng(), 6);
+    Serial.print(" Altitude: ");
+    Serial.println(altitude);
+
+    // Send the latitude, longitude, and altitude over the RF transmitter module
+    rfTx.print("Latitude: ");
+    rfTx.print(gps.location.lat(), 6);
+    rfTx.print(" Longitude: ");
+    rfTx.print(gps.location.lng(), 6);
+    rfTx.print(" Altitude: ");
+    rfTx.println(altitude);
+  }
+}
+
+// Function to read the altitude from the rocket's altimeter
+float readAltimeter() {
+  // TODO: Implement code to read the altitude from the rocket's altimeter
+}
