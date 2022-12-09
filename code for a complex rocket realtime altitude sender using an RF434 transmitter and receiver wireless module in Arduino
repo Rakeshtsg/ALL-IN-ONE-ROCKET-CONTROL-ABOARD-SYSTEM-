@@ -1,0 +1,37 @@
+#include <SoftwareSerial.h>
+
+// Set up the RF434 transmitter and receiver pins
+const int rfTxPin = 9;
+const int rfRxPin = 10;
+
+// Set up a software serial port for communication with the RF434 module
+SoftwareSerial rf434 = SoftwareSerial(rfRxPin, rfTxPin);
+
+// Set up a variable to store the altitude of the rocket
+float altitude = 0;
+
+void setup() {
+  // Set the baud rate for the RF434 module
+  rf434.begin(9600);
+
+  // Set up the serial port for debugging
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Read the altitude from the rocket's altimeter
+  altitude = readAltimeter();
+
+  // Send the altitude over the RF434 module
+  rf434.print("Altitude: ");
+  rf434.println(altitude);
+
+  // Print the altitude to the serial port for debugging
+  Serial.print("Altitude: ");
+  Serial.println(altitude);
+}
+
+// Function to read the altitude from the rocket's altimeter
+float readAltimeter() {
+  // TODO: Implement code to read the altitude from the rocket's altimeter
+}
