@@ -1,0 +1,27 @@
+#include <Servo.h> // include the Servo library
+
+const int altitudeSensorPin = A0; // altitude sensor pin
+const int servo1Pin = 9; // first servo control pin
+const int servo2Pin = 10; // second servo control pin
+
+Servo servo1; // create a Servo object for the first servo
+Servo servo2; // create a Servo object for the second servo
+
+void setup() {
+  servo1.attach(servo1Pin); // attach the first servo to the control pin
+  servo2.attach(servo2Pin); // attach the second servo to the control pin
+  pinMode(altitudeSensorPin, INPUT); // set the altitude sensor pin as an input
+}
+
+void loop() {
+  int altitude = analogRead(altitudeSensorPin); // read the altitude sensor value
+
+  // map the altitude value to a servo angle
+  // (assumes the altitude sensor has a range of 0-1023 and the servos have a range of 0-180)
+  int angle1 = map(altitude, 0, 1023, 0, 180);
+  int angle2 = map(altitude, 0, 1023, 180, 0);
+
+  servo1.write(angle1); // set the first servo to the calculated angle
+  servo2.write(angle2); // set the second servo to the calculated angle
+  delay(10); // wait 10 milliseconds before checking the altitude again
+}
