@@ -1,0 +1,47 @@
+// Include the necessary libraries for the GPS module, servos, and RF transmitter
+#include <TinyGPS++.h>
+#include <Servo.h>
+#include <VirtualWire.h>
+
+// Declare the pins used by the GPS module, servos, and RF transmitter
+const int gpsRxPin = 3;
+const int gpsTxPin = 4;
+const int servo1Pin = 5;
+const int servo2Pin = 6;
+const int transmitterPin = 7;
+
+// Declare the TinyGPS++ object and the servos
+TinyGPSPlus gps;
+Servo servo1, servo2;
+
+void setup() {
+  // Set the data rate for the GPS module
+  Serial.begin(9600);
+  // Initialize the servos and RF transmitter
+  servo1.attach(servo1Pin);
+  servo2.attach(servo2Pin);
+  vw_set_tx_pin(transmitterPin);
+  vw_setup(2000); // Set the data rate for the RF transmitter
+}
+
+void loop() {
+  // Check for new data from the GPS module
+  if (Serial.available() > 0) {
+    gps.encode(Serial.read());
+  }
+
+  // If the GPS has a fix, control the servos and transmit the altitude
+  if (gps.location.isValid()) {
+    // Control the servos based on the GPS coordinates
+    servo1.write(gps.location.lat());
+    servo2.write(gps.location.lng());
+
+    // Create a message with the altitude information
+    char altitudeMessage[50];
+    sprintf(altitudeMessage, "Altitude: %d meters", (int)gps.altitude.meters());
+
+    // Transmit the message using the RF transmitter
+    vw_send((uint8_t *)altitudeMessage, strlen(altitudeMessage));
+    vw_wait_tx();
+  }
+}
