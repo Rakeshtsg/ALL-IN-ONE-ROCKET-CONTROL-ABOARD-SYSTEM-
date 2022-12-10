@@ -1,0 +1,65 @@
+#include <math.h>
+
+// Rocket parameters
+const float mass = 10.0;      // Mass of the rocket (kg)
+const float thrust = 100.0;    // Maximum thrust of the rocket (N)
+const float dragCoeff = 0.1;   // Drag coefficient of the rocket
+const float area = 1.0;        // Cross-sectional area of the rocket (m^2)
+
+// Initial conditions
+const float initVelocity = 0.0;  // Initial velocity of the rocket (m/s)
+const float initAltitude = 0.0;  // Initial altitude of the rocket (m)
+const float initOrientation = 0.0; // Initial orientation of the rocket (rad)
+
+// Control parameters
+const float kpAltitude = 0.1;  // Proportional gain for altitude control
+const float kpOrientation = 0.1; // Proportional gain for orientation control
+
+// Simulation parameters
+const float timestep = 0.1;    // Time step for the simulation (s)
+const float maxTime = 100.0;   // Maximum time for the simulation (s)
+
+int main()
+{
+  // Initialize variables
+  float velocity = initVelocity;
+  float altitude = initAltitude;
+  float orientation = initOrientation;
+  float time = 0.0;
+
+  // Run the simulation
+  while (time < maxTime)
+  {
+    // Calculate the air density (assume constant at sea level)
+    float airDensity = 1.225;
+
+    // Calculate the drag force
+    float dragForce = 0.5 * airDensity * velocity * velocity * dragCoeff * area;
+
+    // Calculate the control signal for altitude
+    float errorAltitude = altitude - targetAltitude;
+    float controlAltitude = kpAltitude * errorAltitude;
+
+    // Calculate the control signal for orientation
+    float errorOrientation = orientation - targetOrientation;
+    float controlOrientation = kpOrientation * errorOrientation;
+
+    // Calculate the total thrust
+    float totalThrust = thrust + controlAltitude + controlOrientation;
+
+    // Calculate the acceleration
+    float acceleration = (totalThrust - dragForce) / mass;
+
+    // Update the velocity and altitude
+    velocity += acceleration * timestep;
+    altitude += velocity * timestep;
+
+    // Update the orientation
+    orientation += orientationRate * timestep;
+
+    // Update the time
+    time += timestep;
+  }
+
+  return 0;
+}
